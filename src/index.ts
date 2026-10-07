@@ -11,7 +11,13 @@ import { LinearService } from './services/linear-service.js';
 import { allToolDefinitions } from './tools/definitions/index.js';
 import { registerToolHandlers } from './tools/handlers/index.js';
 import { getLinearRateLimitSnapshot, installLinearRateLimitHandling } from './utils/linear-rate-limit.js';
-import { logInfo, logError, isDebugLoggingEnabled, type LinearAuthConfig } from './utils/config.js';
+import {
+  logInfo,
+  logError,
+  getLinearApiUrl,
+  isDebugLoggingEnabled,
+  type LinearAuthConfig,
+} from './utils/config.js';
 import { runAuthCli } from './auth/cli.js';
 import { createRefreshingProvider } from './auth/refreshing-provider.js';
 import { resolveLinearAuth } from './auth/resolve.js';
@@ -40,10 +46,13 @@ async function runServer() {
 
     // Build the Linear client/service pair, rebuilding transparently when a
     // stored-credential refresh rotates the access token mid-session.
+    const apiUrl = getLinearApiUrl();
+    if (apiUrl) logInfo(`Using Linear API at ${apiUrl}`);
     const buildServices = (auth: LinearAuthConfig) => {
-      const linearClient = new LinearClient(
-        auth.type === 'oauth' ? { accessToken: auth.token } : { apiKey: auth.token },
-      );
+      const linearClient = new LinearClient({
+        ...(auth.type === 'oauth' ? { accessToken: auth.token } : { apiKey: auth.token }),
+        ...(apiUrl ? { apiUrl } : {}),
+      });
       installLinearRateLimitHandling(linearClient);
       return { linearClient, linearService: new LinearService(linearClient) };
     };

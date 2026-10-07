@@ -93,6 +93,14 @@ Creating an OAuth app and rotating OAuth or webhook secrets returns one-time sec
 
 Webhook URLs must be publicly reachable HTTPS endpoints. Validation rejects credentials in URLs and obvious loopback, private-network, link-local, and local-hostname destinations.
 
+#### API endpoint
+
+The server talks to `https://api.linear.app/graphql`. To use another Linear-compatible GraphQL endpoint, such as a local Linear API emulator in tests, set `LINEAR_API_URL`:
+
+```bash
+export LINEAR_API_URL=http://localhost:4004/graphql
+```
+
 ### Installing via [add-mcp](https://github.com/neondatabase/add-mcp) (Recommended)
 
 `add-mcp` installs the server into Claude Code, Cursor, Codex, VS Code, Claude Desktop, and many other MCP-aware agents with a single command:

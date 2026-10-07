@@ -1,4 +1,8 @@
-import { getExplicitLinearAuthConfig, getLinearApiToken } from '../utils/config.js';
+import {
+  getExplicitLinearAuthConfig,
+  getLinearApiToken,
+  getLinearApiUrl,
+} from '../utils/config.js';
 
 describe('getLinearApiToken', () => {
   const originalArgv = process.argv;
@@ -12,6 +16,7 @@ describe('getLinearApiToken', () => {
     delete process.env.LINEAR_API_KEY;
     delete process.env.LINEAR_WEBHOOK_SECRET;
     delete process.env.MCP_LINEAR_DEBUG;
+    delete process.env.LINEAR_API_URL;
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
@@ -67,6 +72,26 @@ describe('getLinearApiToken', () => {
     it('returns undefined without logging when no explicit credential is configured, so callers can fall back to stored credentials', () => {
       expect(getExplicitLinearAuthConfig()).toBeUndefined();
       expect(consoleErrorSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getLinearApiUrl', () => {
+    it('is undefined when LINEAR_API_URL is unset or blank, so the SDK default is used', () => {
+      expect(getLinearApiUrl()).toBeUndefined();
+      process.env.LINEAR_API_URL = '  ';
+      expect(getLinearApiUrl()).toBeUndefined();
+    });
+
+    it('returns the configured endpoint', () => {
+      process.env.LINEAR_API_URL = 'http://linear-sim:4004/graphql';
+      expect(getLinearApiUrl()).toBe('http://linear-sim:4004/graphql');
+    });
+
+    it('rejects a value that is not an http(s) URL', () => {
+      for (const value of ['not a url', 'linear-sim:4004/graphql', 'ftp://linear-sim/graphql']) {
+        process.env.LINEAR_API_URL = value;
+        expect(() => getLinearApiUrl()).toThrow('LINEAR_API_URL must be an http(s) URL');
+      }
     });
   });
 });

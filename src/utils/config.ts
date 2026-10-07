@@ -81,6 +81,26 @@ export function getExplicitLinearAuthConfig(): LinearAuthConfig | undefined {
   return undefined;
 }
 
+/**
+ * Get the Linear GraphQL endpoint override from LINEAR_API_URL, for example a
+ * local Linear API emulator. Undefined means the SDK default
+ * (https://api.linear.app/graphql).
+ */
+export function getLinearApiUrl(): string | undefined {
+  const apiUrl = process.env.LINEAR_API_URL?.trim();
+  if (!apiUrl) return undefined;
+  let protocol: string;
+  try {
+    protocol = new URL(apiUrl).protocol;
+  } catch {
+    protocol = '';
+  }
+  if (protocol !== 'http:' && protocol !== 'https:') {
+    throw new Error(`LINEAR_API_URL must be an http(s) URL: ${apiUrl}`);
+  }
+  return apiUrl;
+}
+
 export function isDebugLoggingEnabled(): boolean {
   return process.env.MCP_LINEAR_DEBUG === '1' || process.env.MCP_LINEAR_DEBUG === 'true';
 }
