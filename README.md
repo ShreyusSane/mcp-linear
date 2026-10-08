@@ -93,6 +93,14 @@ Creating an OAuth app and rotating OAuth or webhook secrets returns one-time sec
 
 Webhook URLs must be publicly reachable HTTPS endpoints. Validation rejects credentials in URLs and obvious loopback, private-network, link-local, and local-hostname destinations.
 
+#### Choosing tools
+
+The server exposes every tool by default. To expose only some, list them in `MCP_LINEAR_TOOLS`; other tools are neither listed nor callable:
+
+```bash
+export MCP_LINEAR_TOOLS=linear_getIssues,linear_getIssueById,linear_createComment
+```
+
 ### Installing via [add-mcp](https://github.com/neondatabase/add-mcp) (Recommended)
 
 `add-mcp` installs the server into Claude Code, Cursor, Codex, VS Code, Claude Desktop, and many other MCP-aware agents with a single command:
