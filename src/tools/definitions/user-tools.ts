@@ -99,8 +99,9 @@ export const getLabelsToolDefinition: MCPToolDefinition = {
         name: { type: 'string' },
         description: { type: ['string', 'null'] },
         color: { type: ['string', 'null'] },
+        // Workspace labels belong to no team.
         team: {
-          type: 'object',
+          type: ['object', 'null'],
           properties: {
             id: { type: 'string' },
             name: { type: 'string' },
