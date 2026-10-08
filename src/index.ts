@@ -10,6 +10,7 @@ import { createServerStatusProvider } from './server-status.js';
 import { LinearService } from './services/linear-service.js';
 import { allToolDefinitions } from './tools/definitions/index.js';
 import { registerToolHandlers } from './tools/handlers/index.js';
+import { selectEnabledTools } from './utils/tool-selection.js';
 import { getLinearRateLimitSnapshot, installLinearRateLimitHandling } from './utils/linear-rate-limit.js';
 import {
   logInfo,
@@ -69,9 +70,13 @@ async function runServer() {
       return current;
     };
     const getRateLimitStatus = () => getLinearRateLimitSnapshot(current.linearClient);
+    const tools = selectEnabledTools(allToolDefinitions);
+    if (tools.length !== allToolDefinitions.length) {
+      logInfo(`Exposing ${tools.length} of ${allToolDefinitions.length} tools (MCP_LINEAR_TOOLS)`);
+    }
     const getServerStatus = createServerStatusProvider({
       version: pkg.version,
-      toolCount: allToolDefinitions.length,
+      toolCount: tools.length,
       resourceCount: getLinearResourceDefinitions().length,
       promptCount: getLinearPromptDefinitions().length,
       getRateLimitStatus,
@@ -79,11 +84,11 @@ async function runServer() {
 
     // Start the MCP server
     const server = await runMCPServer({
-      tools: allToolDefinitions,
+      tools,
       handleInitialize: async () => {
         logInfo('MCP Linear initialized successfully.');
         return {
-          tools: allToolDefinitions,
+          tools,
         };
       },
       listResources: async () => getLinearResourceDefinitions(),

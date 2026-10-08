@@ -101,6 +101,14 @@ The server talks to `https://api.linear.app/graphql`. To use another Linear-comp
 export LINEAR_API_URL=http://localhost:4004/graphql
 ```
 
+#### Choosing tools
+
+The server exposes every tool by default. To expose only some, list them in `MCP_LINEAR_TOOLS`; other tools are neither listed nor callable:
+
+```bash
+export MCP_LINEAR_TOOLS=linear_getIssues,linear_getIssueById,linear_createComment
+```
+
 ### Installing via [add-mcp](https://github.com/neondatabase/add-mcp) (Recommended)
 
 `add-mcp` installs the server into Claude Code, Cursor, Codex, VS Code, Claude Desktop, and many other MCP-aware agents with a single command:

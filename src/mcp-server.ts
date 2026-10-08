@@ -94,6 +94,10 @@ export async function runMCPServer(config: MCPServerConfig) {
     try {
       const { name, arguments: args = null } = request.params;
 
+      // Only the configured tools can be called (see MCP_LINEAR_TOOLS).
+      if (!toolDefinitionsByName.has(name)) {
+        throw new Error(`Unknown tool: ${name}`);
+      }
       validateToolArguments(config.tools, name, args);
 
       // Call the handler
